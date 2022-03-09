@@ -1,0 +1,45 @@
+[{
+    "id": 1,
+    "cnName": "卜蜂莲花",
+    "enName": "lotus",
+    "products":[
+      {
+        "id": 1,
+        "name": "蜜瓜 约1.3kg /份",
+        "sales": 14,
+        "price": 14.9
+      },{
+        "id": 2,
+        "name": "西瓜 约3.5kg /份",
+        "sales": 3,
+        "price": 47.88
+      },{
+        "id": 3,
+        "name": "火龙果 约450g /份",
+        "sales": 34,
+        "price": 11.88
+      }
+    ]
+},{
+    "id": 2,
+    "cnName": "华润万家",
+    "enName": "vanguard",
+    "products": [
+      {
+          "id": 1,
+          "name": "油麦菜300g",
+          "sales": 27,
+          "price": 4.69
+      },{
+          "id": 2,
+          "name": "小白菜300g",
+          "sales": 20,
+          "price": 3.59
+      },{
+          "id": 3,
+          "name": "小青菜250g",
+          "sales": 61,
+          "price": 2.99
+      }
+    ]
+}]

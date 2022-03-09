@@ -1,0 +1,11 @@
+[{    "name": "超市", "pinyin": "chaoshi", "num": 1
+ },{  "name": "生鲜果蔬", "pinyin": "shengxianguoshu", "num": 2
+ },{  "name": "乳制品", "pinyin": "ruzhipin", "num": 3
+ },{  "name": "粮油副食", "pinyin": "liangyoufushi", "num": 4
+ },{  "name": "送药上门", "pinyin": "songyaoshangmen", "num": 5
+ },{  "name": "个洗家清", "pinyin": "gexijiaqing", "num": 6
+ },{  "name": "母婴", "pinyin": "muying", "num": 7
+ },{  "name": "酒水饮料", "pinyin": "jiushuiyinliao", "num": 8
+ },{  "name": "休闲食品", "pinyin": "xiuxianshipin", "num": 9
+ },{  "name": "手机家电", "pinyin": "shoujijiadian", "num": 10 
+}]
