@@ -1,0 +1,27 @@
+{
+  "name": "jddaojia-api",
+  "version": "1.0.0",
+  "description": "JDdaojia项目后端API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Augustine-of-Hippo/JDdaojia-backAPI.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "Express"
+  ],
+  "author": "Mingux",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Augustine-of-Hippo/JDdaojia-backAPI/issues"
+  },
+  "homepage": "https://github.com/Augustine-of-Hippo/JDdaojia-backAPI#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.3"
+  }
+}
