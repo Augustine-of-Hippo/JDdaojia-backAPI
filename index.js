@@ -74,11 +74,27 @@ const readAddressListFile = () => {
   const addressList = JSON.parse(data)
   return addressList
 }
+const writeAddressesToFile = addressList => {
+  try {
+    fs.writeFileSync(__dirname + '/user-data/address-list.json'
+    , JSON.stringify(addressList, "", "\t")
+    , err => {
+    if (err) {
+      console.error(err)
+      return
+    }
+    console.log('/user-data/address-list.json Written Successfully')
+    })
+  } catch (err) {
+  console.error(err)
+  }
+}
 const retrieveUserAccount = (accountList, { userName, userId }) => {
   // 检索账户,返回resultOfFind.
   // userName和userId两个参数,至少得传入其中一个.  
   if((userName ?? userId) == undefined) throw Error('Need necessary arguments.')
   const data = []
+  console.log('accountList:', accountList)
   accountList.forEach(item => data.push(item))
   
   const resultOfFind = data.find(item => {
@@ -285,9 +301,13 @@ const queryShopNameByOrderId = (userId, orderId) => {
      'userId:', userId, 'processCode:', processCode, 'shopId:', shopId, 'addressInfo:', addressInfo,
      'isCanceled:',isCanceled, 'paytypeId:', paytypeId, 'products:', products, 'orderId:', orderId,
    )
+
+   if (!retrieveUserAccount(readAccountListFile(), { userId })) {
+    returnNo1Err(result, 'Can\'t find that account.')
+    return
+   }
+
    const shopInfo = getShopInfoFromFile(shopId)
-   const accountList = readAccountListFile()   
-   const resultOfFind = retrieveUserAccount(accountList, { userId })
    const orders = readOrderRepositoryFile()
    const { products: productList, cnName: shopCnName } = shopInfo
    const result = {}
@@ -318,24 +338,33 @@ const queryShopNameByOrderId = (userId, orderId) => {
          })
          return nonexistentProductIds
        }
-       if (!shopInfo)  returnNo1Err(result, 'Can\'t find that shop.')
-       if (!resultOfFind) returnNo1Err(result, 'Can\'t find that account.')
-       if (findNonexistentProducts()?.length !== 0) returnNo1Err(result, 'Can\'t find some products.')
+       if (!shopInfo) {
+         returnNo1Err(result, 'Can\'t find that shop.')
+         return
+       }
+       if (findNonexistentProducts()?.length !== 0) {
+         returnNo1Err(result, 'Can\'t find some products.')
+         return
+       }
        break;
      case 3:
        // 对支付阶段接收到的支付方式进行检验,
        // 注意isCanceled键值只能设置一次. 
-       if (!(+paytypeId === 1) && !(+paytypeId === 2)) returnNo1Err(result, 'Can\'t find that paytypeId.')
-       if (!resultOfFind) returnNo1Err(result, 'Can\'t find that account.')
+       if (!(+paytypeId === 1) && !(+paytypeId === 2)) {
+         returnNo1Err(result, 'Can\'t find that paytypeId.')
+         return
+       }
        if (order?.isCanceled !== undefined) {
          result.message = 'This order has already been settled.'
          result.errno = 3
          console.log('result', result)
          res.json(result)
+         return
        }
        break;
      default:
        returnNo1Err(result, 'Can\'t find that processCode.')
+       return
    }
 
    // 核心流程:
@@ -351,7 +380,7 @@ const queryShopNameByOrderId = (userId, orderId) => {
       }
       console.log('result', result)
       res.json(result)
-      break;
+      return
      }
      case 2: {
       // 订单确认环节,返回订单号、商店名、单总价和支付额.
@@ -381,14 +410,17 @@ const queryShopNameByOrderId = (userId, orderId) => {
       }
       console.log('result', result)
       res.json(result)
-      break;
+      return
      }
      case 3:
       // 订单支付环节,检验订单号是否存在,返回orderId(或取消订单的错误码).
       // 若支付成功,则还应返回productIds,以删除购物车内相应商品.
       // 保留isCanceled、paytypeId值(若前者为true则不设置后者).
       // 先检验订单是否存在.
-      if (!order) returnNo1Err(result, 'Can\'t find that order.')
+      if (!order) {
+        returnNo1Err(result, 'Can\'t find that order.')
+        return
+      }
       console.log('userId:', userId, 'orderId:', orderId,
         'isCanceled:', isCanceled, 'paytypeId:', paytypeId)
       const productIds = []
@@ -404,7 +436,6 @@ const queryShopNameByOrderId = (userId, orderId) => {
       result.data = { orderId, productIds, shopId: queriedShopId }
       console.log('result', result)
       res.json(result)
-      break;
    }
  })
 
@@ -417,9 +448,7 @@ const queryShopNameByOrderId = (userId, orderId) => {
     returnErr(result, 'Lack necessary req.body data.', 2, res)
     return
    }
-   const accountList = readAccountListFile() 
-   const resultOfFind = retrieveUserAccount(accountList, { userId })
-   if (!resultOfFind) {
+   if (!retrieveUserAccount(readAccountListFile(), { userId })) {
      returnErr(result, 'Can\'t find that account.', 1, res)
      return
    }
@@ -468,6 +497,7 @@ const queryShopNameByOrderId = (userId, orderId) => {
     result.errno = 0
     result.data = { orders }
     res.json(result)
+
    } else if (+orderId !== NaN && +orderId > 0) {
     // 返回单个订单的详情.
     const targetOrder = ordersByUserId[orderId]
@@ -489,10 +519,8 @@ const queryShopNameByOrderId = (userId, orderId) => {
     +orderId !== NaN && +orderId > 0 ||
     +userId !== NaN && +userId >= 0 ||
     ['delete'].includes(operation) // 行首的数组应包含所有允许的订单操作,现仅有delete一项.
-  ) {
-    const accountList = readAccountListFile() 
-    const resultOfFind = retrieveUserAccount(accountList, { userId })
-    if (!resultOfFind) {
+  ) { 
+    if (!retrieveUserAccount(readAccountListFile(), { userId })) {
       returnErr(result, 'Can\'t find that account.', 1, res)
       return
     }
@@ -530,6 +558,11 @@ const queryShopNameByOrderId = (userId, orderId) => {
     return
    }
 
+   if (!retrieveUserAccount(readAccountListFile(), { userId })) {
+     returnErr(result, 'Can\'t find that account.', 1, res)
+     return
+   }
+
    const addressList = readAddressListFile()
    const addressesByUserId = addressList[userId]
    const returnEmptyMsg = () => {
@@ -538,6 +571,14 @@ const queryShopNameByOrderId = (userId, orderId) => {
     res.json(result)
    }
    console.log('addressesByUserId:', addressesByUserId)
+
+   if (!addressesByUserId) {
+     // 用户无地址.
+     addressList[userId] = []
+     writeAddressesToFile(addressList)
+     returnEmptyMsg()
+     return
+   }
 
    if (
      (typeof addressId === 'number' || typeof addressId === 'string') &&
@@ -577,7 +618,7 @@ const queryShopNameByOrderId = (userId, orderId) => {
     return
    }
 
-  //  返回整个地址列表.
+  // 返回整个地址列表.
    result.errno = 0
    result.data = { addressesByUserId }
    res.json(result)
@@ -592,6 +633,11 @@ const queryShopNameByOrderId = (userId, orderId) => {
   const { recipient, address, telNum } = operateData
 
   console.log('req.params:', req.params)
+
+  if (!retrieveUserAccount(readAccountListFile(), { userId })) {
+    returnErr(result, 'Can\'t find that account.', 1, res)
+    return
+  }
   
   if (
     [userId, operateType].includes(undefined) ||
@@ -623,21 +669,6 @@ const queryShopNameByOrderId = (userId, orderId) => {
     return
   }
   
-  const writeAddressesToFile = addressList => {
-    try {
-      fs.writeFileSync(__dirname + '/user-data/address-list.json'
-      , JSON.stringify(addressList, "", "\t")
-      , err => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      console.log('/user-data/address-list.json Written Successfully')
-      })
-    } catch (err) {
-    console.error(err)
-    }
-  }
   const addressList = readAddressListFile()
   const addressesByUserId = addressList[userId]
   
@@ -677,7 +708,6 @@ const queryShopNameByOrderId = (userId, orderId) => {
       writeAddressesToFile(addressList)
       result.errno = 0
   }
-
   res.json(result)
 })
 
