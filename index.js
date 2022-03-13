@@ -164,7 +164,8 @@ const queryShopNameByOrderId = (userId, orderId) => {
     headers: {
       'x-timestamp': Date.now(),
       'x-sent': true,
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'max-age=2592000'
     }
   }
   var fileName = req.params.name + '.json'
@@ -179,7 +180,6 @@ const queryShopNameByOrderId = (userId, orderId) => {
  })
 
  app.get('/api/shop/:shopId/:productId(\\d+)?', (req, res, next) => {
-   // 注: 接下来写获取单个商品信息.
   var fileName = "./shop-data/shop-info.json"
   fs.readFile(fileName, 'utf8',
    (err, data) => {
@@ -198,6 +198,7 @@ const queryShopNameByOrderId = (userId, orderId) => {
     }
 
     if (req.params.productId !== undefined) {
+      // 返回单个商品的信息.
       const productId = +req.params.productId
       const productInfo = shopInfo.products.find(item => item.id === productId)
       if (productInfo === undefined) {
@@ -214,7 +215,6 @@ const queryShopNameByOrderId = (userId, orderId) => {
     }
 
     res.json(shopInfo, "", "\t")
-
   })
  })
 
@@ -489,7 +489,9 @@ const queryShopNameByOrderId = (userId, orderId) => {
       processedOrder.shopEnName = shopEnName
       processedOrder.shopCnName = shopCnName
       
-      processedOrder.products.forEach((product, index, array) => array[index] = { id: product.id })
+      processedOrder.products.forEach((product, index, array) => array[index] = { id: product.id, count: product.count })
+      // products 数组中每个商品数据只有对应的id和数量 .
+
       orders[orderId] = processedOrder
       console.log('processedOrder:', processedOrder)
     }
