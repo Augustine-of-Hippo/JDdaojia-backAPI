@@ -1,7 +1,7 @@
 # JDdaojia-backAPI
 ### 简介
 
-这是JDdaojia项目的后端api接口部分. 前端仓库地址: [JDdaojia](https://github.com/Augustine-of-Hippo/JDdaojia) .
+这是JDdaojia项目的后端api接口部分. 前端仓库地址: [JDdaojia](https://github.com/Mingeax/JDdaojia) .
 
 本程序把商城的账户、商铺和地址等数据分别储存在不同的json文件中,服务器接收到http请求后会用node原生fs模块从文件中提取信息,进行增删查改后再覆写文件.用这种方式为前端提供后端数据接口的交互操作,如登录、下单、查询订单、修改地址等.每次服务器开启时都会将相关的数据文件初始化,以抹除上一次运行的修改.
 

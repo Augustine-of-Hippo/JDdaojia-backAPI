@@ -8,18 +8,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Augustine-of-Hippo/JDdaojia-backAPI.git"
+    "url": "git+ssh://git@github.com/Mingeax/JDdaojia-backAPI.git"
   },
   "keywords": [
     "NodeJS",
     "Express"
   ],
-  "author": "Mingux",
+  "author": "Mingeax",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Augustine-of-Hippo/JDdaojia-backAPI/issues"
+    "url": "https://github.com/Mingeax/JDdaojia-backAPI/issues"
   },
-  "homepage": "https://github.com/Augustine-of-Hippo/JDdaojia-backAPI#readme",
+  "homepage": "https://github.com/Mingeax/JDdaojia-backAPI#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.3"
